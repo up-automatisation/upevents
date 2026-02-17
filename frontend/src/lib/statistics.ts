@@ -24,7 +24,7 @@ export interface ParticipantStats {
 }
 
 export interface ParticipantEventDetail {
-  eventId: string;
+  eventId: number;
   eventTitle: string;
   eventDate: string;
   registered: boolean;

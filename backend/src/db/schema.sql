@@ -1,6 +1,5 @@
 /*
   UpEvents Database Schema - MySQL Version
-  Converted from Supabase PostgreSQL migrations
 
   Tables:
   1. categories - Event categories
@@ -27,23 +26,23 @@ DROP TABLE IF EXISTS categories;
 
 -- Categories table
 CREATE TABLE categories (
-  id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+  id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) UNIQUE NOT NULL,
   color VARCHAR(7) NOT NULL DEFAULT '#3B82F6',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert default categories
-INSERT INTO categories (id, name, color) VALUES
-  (UUID(), 'Conférence', '#3B82F6'),
-  (UUID(), 'Formation', '#10B981'),
-  (UUID(), 'Atelier', '#F59E0B'),
-  (UUID(), 'Webinaire', '#8B5CF6'),
-  (UUID(), 'Networking', '#EC4899');
+INSERT INTO categories (name, color) VALUES
+  ('Conférence', '#3B82F6'),
+  ('Formation', '#10B981'),
+  ('Atelier', '#F59E0B'),
+  ('Webinaire', '#8B5CF6'),
+  ('Networking', '#EC4899');
 
 -- Events table
 CREATE TABLE events (
-  id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+  id INT AUTO_INCREMENT PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
   location TEXT,
@@ -52,7 +51,7 @@ CREATE TABLE events (
   attendance_code VARCHAR(255) UNIQUE NOT NULL,
   is_active BOOLEAN DEFAULT TRUE,
   is_closed BOOLEAN DEFAULT FALSE NOT NULL,
-  category_id CHAR(36) NULL,
+  category_id INT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
@@ -65,8 +64,8 @@ CREATE INDEX idx_events_category_id ON events(category_id);
 
 -- Custom fields table
 CREATE TABLE custom_fields (
-  id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-  event_id CHAR(36) NOT NULL,
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  event_id INT NOT NULL,
   field_name TEXT NOT NULL,
   field_type VARCHAR(50) NOT NULL CHECK (field_type IN ('text', 'email', 'number', 'select', 'textarea')),
   field_options JSON DEFAULT ('[]'),
@@ -81,8 +80,8 @@ CREATE INDEX idx_custom_fields_event_id ON custom_fields(event_id);
 
 -- Registrations table
 CREATE TABLE registrations (
-  id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-  event_id CHAR(36) NOT NULL,
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  event_id INT NOT NULL,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   email VARCHAR(255) NOT NULL,
@@ -101,9 +100,9 @@ CREATE INDEX idx_registrations_qr_code ON registrations(qr_code);
 
 -- Registration data for custom fields
 CREATE TABLE registration_data (
-  id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-  registration_id CHAR(36) NOT NULL,
-  custom_field_id CHAR(36) NOT NULL,
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  registration_id INT NOT NULL,
+  custom_field_id INT NOT NULL,
   value TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE,
@@ -116,8 +115,8 @@ CREATE INDEX idx_registration_data_custom_field_id ON registration_data(custom_f
 
 -- Attendance tracking
 CREATE TABLE attendance (
-  id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-  registration_id CHAR(36) NOT NULL,
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  registration_id INT NOT NULL,
   checked_in_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   notes TEXT,
   points_awarded INT DEFAULT 0,
@@ -129,7 +128,7 @@ CREATE INDEX idx_attendance_registration_id ON attendance(registration_id);
 
 -- Participants table (gamification)
 CREATE TABLE participants (
-  id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+  id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
@@ -146,8 +145,8 @@ CREATE INDEX idx_participants_total_points ON participants(total_points DESC);
 
 -- Participant badges
 CREATE TABLE participant_badges (
-  id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-  participant_id CHAR(36) NOT NULL,
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  participant_id INT NOT NULL,
   badge_type VARCHAR(50) NOT NULL,
   badge_name TEXT NOT NULL,
   earned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -159,8 +158,8 @@ CREATE INDEX idx_participant_badges_participant_id ON participant_badges(partici
 
 -- Program slots table
 CREATE TABLE program_slots (
-  id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-  event_id CHAR(36) NOT NULL,
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  event_id INT NOT NULL,
   start_time TIME NOT NULL,
   end_time TIME NOT NULL,
   title TEXT NOT NULL,

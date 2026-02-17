@@ -16,7 +16,7 @@ interface RegistrationWithAttendance extends Registration {
 }
 
 interface EventDetailProps {
-  eventId: string;
+  eventId: number;
 }
 
 export function EventDetail({ eventId }: EventDetailProps) {
@@ -45,7 +45,7 @@ export function EventDetail({ eventId }: EventDetailProps) {
   const [editEventDate, setEditEventDate] = useState('');
   const [editStartTime, setEditStartTime] = useState('');
   const [editEndTime, setEditEndTime] = useState('');
-  const [editCategoryId, setEditCategoryId] = useState<string>('');
+  const [editCategoryId, setEditCategoryId] = useState<number | null>(null);
   const [showProgram, setShowProgram] = useState(false);
   const [showRegistrationPreview, setShowRegistrationPreview] = useState(false);
 
@@ -116,7 +116,7 @@ export function EventDetail({ eventId }: EventDetailProps) {
     }
   }
 
-  async function cancelRegistration(regId: string) {
+  async function cancelRegistration(regId: number) {
     if (!confirm('Voulez-vous vraiment annuler cette inscription ?')) return;
 
     try {
@@ -127,7 +127,7 @@ export function EventDetail({ eventId }: EventDetailProps) {
     }
   }
 
-  async function toggleAttendance(regId: string, currentlyAttended: boolean) {
+  async function toggleAttendance(regId: number, currentlyAttended: boolean) {
     try {
       if (currentlyAttended) {
         await attendanceApi.delete(regId);
@@ -188,7 +188,7 @@ export function EventDetail({ eventId }: EventDetailProps) {
     setEditEventDate(localDate.toISOString().slice(0, 10));
     setEditStartTime(event.start_time || '');
     setEditEndTime(event.end_time || '');
-    setEditCategoryId(event.category_id || '');
+    setEditCategoryId(event.category_id || null);
     setShowEditModal(true);
   }
 
@@ -885,8 +885,8 @@ export function EventDetail({ eventId }: EventDetailProps) {
                   Catégorie
                 </label>
                 <select
-                  value={editCategoryId}
-                  onChange={(e) => setEditCategoryId(e.target.value)}
+                  value={editCategoryId ?? ''}
+                  onChange={(e) => setEditCategoryId(e.target.value ? Number(e.target.value) : null)}
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                 >
                   <option value="">Sans catégorie</option>

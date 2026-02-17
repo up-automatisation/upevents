@@ -25,7 +25,7 @@ export interface ParticipantStats {
 }
 
 export interface ParticipantEventDetail {
-  eventId: string;
+  eventId: number;
   eventTitle: string;
   eventDate: string;
   registered: boolean;
@@ -118,7 +118,7 @@ export async function getParticipantStatistics(): Promise<ParticipantStats[]> {
     const participantMap = new Map<string, {
       firstName: string;
       lastName: string;
-      registrationIds: string[];
+      registrationIds: number[];
     }>();
 
     for (const reg of registrations) {

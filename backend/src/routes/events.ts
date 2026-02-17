@@ -110,8 +110,8 @@ router.post('/', async (req: any, res: any) => {
     const attendance_code = nanoid(10);
 
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO events (id, title, description, location, event_date, registration_code, attendance_code, category_id, is_active)
-       VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, FALSE)`,
+      `INSERT INTO events (title, description, location, event_date, registration_code, attendance_code, category_id, is_active)
+       VALUES (?, ?, ?, ?, ?, ?, ?, FALSE)`,
       [title, description || '', location || '', event_date, registration_code, attendance_code, category_id || null]
     );
 
@@ -119,8 +119,8 @@ router.post('/', async (req: any, res: any) => {
       `SELECT e.*, c.name as category_name, c.color as category_color
        FROM events e
        LEFT JOIN categories c ON e.category_id = c.id
-       WHERE e.registration_code = ?`,
-      [registration_code]
+       WHERE e.id = ?`,
+      [result.insertId]
     );
 
     res.status(201).json(newEvent[0]);

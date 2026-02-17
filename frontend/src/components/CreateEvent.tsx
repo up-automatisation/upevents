@@ -17,7 +17,7 @@ export function CreateEvent() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [programHtml, setProgramHtml] = useState('');
-  const [categoryId, setCategoryId] = useState<string>('');
+  const [categoryId, setCategoryId] = useState<number | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [customFields, setCustomFields] = useState<Omit<CustomField, 'event_id'>[]>([]);
   const [loading, setLoading] = useState(false);
@@ -195,8 +195,8 @@ export function CreateEvent() {
                 Catégorie
               </label>
               <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                value={categoryId ?? ''}
+                onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : null)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="">Aucune catégorie</option>

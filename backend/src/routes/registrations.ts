@@ -50,14 +50,14 @@ router.post('/', async (req: any, res: any) => {
     const qr_code = nanoid(20);
 
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO registrations (id, event_id, first_name, last_name, email, company, qr_code, points_earned)
-       VALUES (UUID(), ?, ?, ?, ?, ?, ?, 0)`,
+      `INSERT INTO registrations (event_id, first_name, last_name, email, company, qr_code, points_earned)
+       VALUES (?, ?, ?, ?, ?, ?, 0)`,
       [event_id, first_name, last_name, email, company || '', qr_code]
     );
 
     const [newRegistration] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM registrations WHERE qr_code = ?',
-      [qr_code]
+      'SELECT * FROM registrations WHERE id = ?',
+      [result.insertId]
     );
 
     res.status(201).json(newRegistration[0]);

@@ -47,7 +47,7 @@ router.get('/participant/:email', async (req: any, res: any) => {
 // GET /api/gamification/badges/:participantId - Get participant badges
 router.get('/badges/:participantId', async (req: any, res: any) => {
   try {
-    const badges = await getParticipantBadges(req.params.participantId);
+    const badges = await getParticipantBadges(Number(req.params.participantId));
     res.json(badges);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
