@@ -17,6 +17,7 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 
   const response = await fetch(url, {
     ...options,
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...options?.headers,
@@ -225,6 +226,23 @@ export const gamification = {
 
   getConfig: () =>
     request<any>('/gamification/config'),
+};
+
+// Auth API
+export const auth = {
+  login: (password: string) =>
+    request<{ success: boolean; message: string }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ password }),
+    }),
+
+  logout: () =>
+    request<{ success: boolean; message: string }>('/auth/logout', {
+      method: 'POST',
+    }),
+
+  check: () =>
+    request<{ authenticated: boolean }>('/auth/check'),
 };
 
 export { ApiError };

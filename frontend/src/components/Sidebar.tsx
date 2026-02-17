@@ -1,5 +1,5 @@
-import { Calendar, Tag, FileText, Trophy, Plus, LayoutDashboard } from 'lucide-react';
-import { useNavigate } from '../App';
+import { Calendar, Tag, FileText, Trophy, Plus, LayoutDashboard, LogOut } from 'lucide-react';
+import { useNavigate, useAuth } from '../App';
 
 interface SidebarProps {
   currentRoute: string;
@@ -7,6 +7,7 @@ interface SidebarProps {
 
 export function Sidebar({ currentRoute }: SidebarProps) {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const navItems = [
     {
@@ -76,13 +77,23 @@ export function Sidebar({ currentRoute }: SidebarProps) {
           })}
         </nav>
 
-        <button
-          onClick={() => navigate('create')}
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-4 rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl font-semibold"
-        >
-          <Plus size={20} />
-          Nouvel Événement
-        </button>
+        <div className="space-y-2">
+          <button
+            onClick={() => navigate('create')}
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-4 rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl font-semibold"
+          >
+            <Plus size={20} />
+            Nouvel Événement
+          </button>
+
+          <button
+            onClick={logout}
+            className="w-full flex items-center justify-center gap-2 border border-slate-300 text-slate-700 px-6 py-3 rounded-xl hover:bg-slate-50 transition-all font-medium"
+          >
+            <LogOut size={18} />
+            Déconnexion
+          </button>
+        </div>
       </div>
     </div>
   );
