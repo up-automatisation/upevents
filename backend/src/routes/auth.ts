@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 
 const router = Router();
 
@@ -8,7 +8,7 @@ const AUTH_PASSWORD = process.env.AUTH_PASSWORD || 'o9&S#ShF7hsHAFq$';
  * POST /api/auth/login
  * Login with password and create session
  */
-router.post('/login', (req: Request, res: Response) => {
+router.post('/login', (req: any, res: any) => {
   const { password } = req.body;
 
   if (!password) {
@@ -28,8 +28,8 @@ router.post('/login', (req: Request, res: Response) => {
  * POST /api/auth/logout
  * Destroy the session
  */
-router.post('/logout', (req: Request, res: Response) => {
-  req.session.destroy((err) => {
+router.post('/logout', (req: any, res: any) => {
+  req.session.destroy((err: any) => {
     if (err) {
       res.status(500).json({ error: 'Failed to logout' });
     } else {
@@ -43,7 +43,7 @@ router.post('/logout', (req: Request, res: Response) => {
  * GET /api/auth/check
  * Check if the current session is authenticated
  */
-router.get('/check', (req: Request, res: Response) => {
+router.get('/check', (req: any, res: any) => {
   const authenticated = req.session.authenticated === true;
   res.json({ authenticated });
 });

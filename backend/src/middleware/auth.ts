@@ -1,17 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
-
-// Extend express-session types
-declare module 'express-session' {
-  interface SessionData {
-    authenticated: boolean;
-  }
-}
-
 /**
  * Middleware to require authentication for protected routes
  * Returns 401 if user is not authenticated
  */
-export const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
+export const requireAuth = (req: any, res: any, next: any): void => {
   if (req.session.authenticated === true) {
     next();
   } else {
@@ -22,6 +13,6 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction): vo
 /**
  * Check if the current session is authenticated
  */
-export const isAuthenticated = (req: Request): boolean => {
+export const isAuthenticated = (req: any): boolean => {
   return req.session.authenticated === true;
 };
