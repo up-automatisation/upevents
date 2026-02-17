@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import { Lock, LogIn } from 'lucide-react';
-import { auth } from '../lib/api';
+import React, { useState } from "react";
+import { Lock, LogIn } from "lucide-react";
+import { auth } from "../lib/api";
 
 interface LoginProps {
   onLogin: () => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       await auth.login(password);
       onLogin();
     } catch (err: any) {
-      setError(err.message || 'Mot de passe incorrect');
+      setError(err.message || "Mot de passe incorrect");
     } finally {
       setIsLoading(false);
     }
@@ -35,14 +35,19 @@ export default function Login({ onLogin }: LoginProps) {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full mb-4">
               <Lock className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">UpEvents</h1>
-            <p className="text-gray-600 mt-2">Connexion à l'espace d'administration</p>
+            <h1 className="text-2xl font-bold text-gray-900">UP-EVENTS</h1>
+            <p className="text-gray-600 mt-2">
+              Connexion à l'espace d'administration
+            </p>
           </div>
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Mot de passe
               </label>
               <input
