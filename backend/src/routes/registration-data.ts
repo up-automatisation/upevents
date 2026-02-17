@@ -16,8 +16,8 @@ router.post('/batch', async (req: any, res: any) => {
     // Insert all registration data
     for (const item of data) {
       await connection.query(
-        `INSERT INTO registration_data (id, registration_id, custom_field_id, value)
-         VALUES (UUID(), ?, ?, ?)`,
+        `INSERT INTO registration_data (registration_id, custom_field_id, value)
+         VALUES (?, ?, ?)`,
         [registration_id, item.custom_field_id, item.value || '']
       );
     }

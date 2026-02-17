@@ -5,7 +5,7 @@ import type { Database } from '../lib/database.types';
 
 type Event = Database['public']['Tables']['events']['Row'];
 type ProgramSlot = Database['public']['Tables']['program_slots']['Row'];
-type LocalSlot = Omit<ProgramSlot, 'id' | 'created_at'> & { id?: string };
+type LocalSlot = Omit<ProgramSlot, 'id' | 'created_at'> & { id?: number };
 type Category = Database['public']['Tables']['categories']['Row'];
 
 interface EventWithCategory extends Event {
@@ -13,13 +13,13 @@ interface EventWithCategory extends Event {
 }
 
 interface ProgramBuilderProps {
-  preselectedEventId?: string;
+  preselectedEventId?: number;
 }
 
 export function ProgramBuilder({ preselectedEventId }: ProgramBuilderProps) {
   const [events, setEvents] = useState<EventWithCategory[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedEventId, setSelectedEventId] = useState<string>('');
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [slots, setSlots] = useState<LocalSlot[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -27,7 +27,7 @@ export function ProgramBuilder({ preselectedEventId }: ProgramBuilderProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<(string | number)[]>([]);
 
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
@@ -91,7 +91,7 @@ export function ProgramBuilder({ preselectedEventId }: ProgramBuilderProps) {
     );
   }
 
-  function toggleCategory(categoryId: string) {
+  function toggleCategory(categoryId: string | number) {
     setSelectedCategories(prev =>
       prev.includes(categoryId)
         ? prev.filter(c => c !== categoryId)
@@ -107,7 +107,7 @@ export function ProgramBuilder({ preselectedEventId }: ProgramBuilderProps) {
   async function loadSlots() {
     setLoading(true);
     try {
-      const data = await programSlotsApi.getByEvent(selectedEventId);
+      const data = await programSlotsApi.getByEvent(selectedEventId!);
       if (data) {
         setSlots(data);
         setHasChanges(false);

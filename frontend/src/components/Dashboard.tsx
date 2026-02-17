@@ -23,7 +23,7 @@ export function Dashboard() {
   const [categories, setCategories] = useState<Category[]>([]);
 
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<(string | number)[]>([]);
 
   useEffect(() => {
     loadEvents();
@@ -88,7 +88,7 @@ export function Dashboard() {
     );
   }
 
-  function toggleCategory(categoryId: string) {
+  function toggleCategory(categoryId: string | number) {
     setSelectedCategories(prev =>
       prev.includes(categoryId)
         ? prev.filter(c => c !== categoryId)

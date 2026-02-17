@@ -33,7 +33,7 @@ export const events = {
   getAll: (includeClosed = false) =>
     request<any[]>(`/events${includeClosed ? '?include_closed=true' : ''}`),
 
-  getById: (id: string) =>
+  getById: (id: number) =>
     request<any>(`/events/${id}`),
 
   getByRegistrationCode: (code: string) =>
@@ -48,23 +48,23 @@ export const events = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: string, data: any) =>
+  update: (id: number, data: any) =>
     request<any>(`/events/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
 
-  delete: (id: string) =>
+  delete: (id: number) =>
     request<void>(`/events/${id}`, {
       method: 'DELETE',
     }),
 
-  toggleStatus: (id: string) =>
+  toggleStatus: (id: number) =>
     request<any>(`/events/${id}/toggle-status`, {
       method: 'PATCH',
     }),
 
-  close: (id: string) =>
+  close: (id: number) =>
     request<any>(`/events/${id}/close`, {
       method: 'PATCH',
     }),
@@ -81,13 +81,13 @@ export const categories = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: string, data: { name: string; color: string }) =>
+  update: (id: number, data: { name: string; color: string }) =>
     request<any>(`/categories/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
 
-  delete: (id: string) =>
+  delete: (id: number) =>
     request<void>(`/categories/${id}`, {
       method: 'DELETE',
     }),
@@ -95,7 +95,7 @@ export const categories = {
 
 // Registrations API
 export const registrations = {
-  getByEvent: (eventId: string) =>
+  getByEvent: (eventId: number) =>
     request<any[]>(`/registrations/by-event/${eventId}`),
 
   getByQrCode: (qrCode: string) =>
@@ -107,13 +107,13 @@ export const registrations = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: string, data: any) =>
+  update: (id: number, data: any) =>
     request<any>(`/registrations/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
 
-  cancel: (id: string) =>
+  cancel: (id: number) =>
     request<any>(`/registrations/${id}/cancel`, {
       method: 'PATCH',
     }),
@@ -121,16 +121,16 @@ export const registrations = {
 
 // Attendance API
 export const attendance = {
-  getByRegistration: (registrationId: string) =>
+  getByRegistration: (registrationId: number) =>
     request<any>(`/attendance/by-registration/${registrationId}`),
 
-  create: (data: { registration_id: string; notes?: string }) =>
+  create: (data: { registration_id: number; notes?: string }) =>
     request<any>('/attendance', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
-  delete: (registrationId: string) =>
+  delete: (registrationId: number) =>
     request<void>(`/attendance/by-registration/${registrationId}`, {
       method: 'DELETE',
     }),
@@ -138,7 +138,7 @@ export const attendance = {
 
 // Program Slots API
 export const programSlots = {
-  getByEvent: (eventId: string) =>
+  getByEvent: (eventId: number) =>
     request<any[]>(`/program-slots/by-event/${eventId}`),
 
   create: (data: any) =>
@@ -147,18 +147,18 @@ export const programSlots = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: string, data: any) =>
+  update: (id: number, data: any) =>
     request<any>(`/program-slots/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
 
-  delete: (id: string) =>
+  delete: (id: number) =>
     request<void>(`/program-slots/${id}`, {
       method: 'DELETE',
     }),
 
-  batchUpdate: (eventId: string, slots: any[]) =>
+  batchUpdate: (eventId: number, slots: any[]) =>
     request<any[]>('/program-slots/batch', {
       method: 'PUT',
       body: JSON.stringify({ event_id: eventId, slots }),
@@ -167,7 +167,7 @@ export const programSlots = {
 
 // Custom Fields API
 export const customFields = {
-  getByEvent: (eventId: string) =>
+  getByEvent: (eventId: number) =>
     request<any[]>(`/custom-fields/by-event/${eventId}`),
 
   create: (data: any) =>
@@ -176,7 +176,7 @@ export const customFields = {
       body: JSON.stringify(data),
     }),
 
-  delete: (id: string) =>
+  delete: (id: number) =>
     request<void>(`/custom-fields/${id}`, {
       method: 'DELETE',
     }),
@@ -184,7 +184,7 @@ export const customFields = {
 
 // Registration Data API
 export const registrationData = {
-  batchCreate: (registrationId: string, data: any[]) =>
+  batchCreate: (registrationId: number, data: any[]) =>
     request<any[]>('/registration-data/batch', {
       method: 'POST',
       body: JSON.stringify({ registration_id: registrationId, data }),
@@ -211,10 +211,10 @@ export const gamification = {
   getParticipant: (email: string) =>
     request<any>(`/gamification/participant/${encodeURIComponent(email)}`),
 
-  getBadges: (participantId: string) =>
+  getBadges: (participantId: number) =>
     request<any[]>(`/gamification/badges/${participantId}`),
 
-  awardAttendance: (participantId: string, registrationId: string) =>
+  awardAttendance: (participantId: number, registrationId: number) =>
     request<any>('/gamification/award-attendance', {
       method: 'POST',
       body: JSON.stringify({ participant_id: participantId, registration_id: registrationId }),

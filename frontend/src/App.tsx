@@ -56,9 +56,9 @@ function App() {
           {route === 'create' && <CreateEvent />}
           {route === 'categories' && <CategoryManager />}
           {route === 'program' && <ProgramBuilder />}
-          {route.startsWith('program/') && <ProgramBuilder preselectedEventId={route.split('/')[1]} />}
+          {route.startsWith('program/') && <ProgramBuilder preselectedEventId={Number(route.split('/')[1])} />}
           {route === 'leaderboard' && <Leaderboard />}
-          {route.startsWith('event/') && <EventDetail eventId={route.split('/')[1]} />}
+          {route.startsWith('event/') && <EventDetail eventId={Number(route.split('/')[1])} />}
           {!route && <Dashboard />}
         </div>
       </div>

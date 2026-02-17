@@ -3,19 +3,19 @@ export interface Database {
     Tables: {
       categories: {
         Row: {
-          id: string;
+          id: number;
           name: string;
           color: string;
           created_at: string;
         };
         Insert: {
-          id?: string;
+          id?: number;
           name: string;
           color?: string;
           created_at?: string;
         };
         Update: {
-          id?: string;
+          id?: number;
           name?: string;
           color?: string;
           created_at?: string;
@@ -23,7 +23,7 @@ export interface Database {
       };
       events: {
         Row: {
-          id: string;
+          id: number;
           title: string;
           description: string;
           location: string;
@@ -32,14 +32,14 @@ export interface Database {
           attendance_code: string;
           is_active: boolean;
           is_closed: boolean;
-          category_id: string | null;
+          category_id: number | null;
           start_time: string | null;
           end_time: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
-          id?: string;
+          id?: number;
           title: string;
           description?: string;
           location?: string;
@@ -48,14 +48,14 @@ export interface Database {
           attendance_code: string;
           is_active?: boolean;
           is_closed?: boolean;
-          category_id?: string | null;
+          category_id?: number | null;
           start_time?: string | null;
           end_time?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
-          id?: string;
+          id?: number;
           title?: string;
           description?: string;
           location?: string;
@@ -64,7 +64,7 @@ export interface Database {
           attendance_code?: string;
           is_active?: boolean;
           is_closed?: boolean;
-          category_id?: string | null;
+          category_id?: number | null;
           start_time?: string | null;
           end_time?: string | null;
           created_at?: string;
@@ -73,8 +73,8 @@ export interface Database {
       };
       custom_fields: {
         Row: {
-          id: string;
-          event_id: string;
+          id: number;
+          event_id: number;
           field_name: string;
           field_type: 'text' | 'email' | 'number' | 'select' | 'textarea';
           field_options: any;
@@ -83,8 +83,8 @@ export interface Database {
           created_at: string;
         };
         Insert: {
-          id?: string;
-          event_id: string;
+          id?: number;
+          event_id: number;
           field_name: string;
           field_type: 'text' | 'email' | 'number' | 'select' | 'textarea';
           field_options?: any;
@@ -93,8 +93,8 @@ export interface Database {
           created_at?: string;
         };
         Update: {
-          id?: string;
-          event_id?: string;
+          id?: number;
+          event_id?: number;
           field_name?: string;
           field_type?: 'text' | 'email' | 'number' | 'select' | 'textarea';
           field_options?: any;
@@ -105,8 +105,8 @@ export interface Database {
       };
       registrations: {
         Row: {
-          id: string;
-          event_id: string;
+          id: number;
+          event_id: number;
           first_name: string;
           last_name: string;
           email: string;
@@ -117,8 +117,8 @@ export interface Database {
           points_earned: number;
         };
         Insert: {
-          id?: string;
-          event_id: string;
+          id?: number;
+          event_id: number;
           first_name: string;
           last_name: string;
           email: string;
@@ -129,8 +129,8 @@ export interface Database {
           points_earned?: number;
         };
         Update: {
-          id?: string;
-          event_id?: string;
+          id?: number;
+          event_id?: number;
           first_name?: string;
           last_name?: string;
           email?: string;
@@ -143,45 +143,45 @@ export interface Database {
       };
       registration_data: {
         Row: {
-          id: string;
-          registration_id: string;
-          custom_field_id: string;
+          id: number;
+          registration_id: number;
+          custom_field_id: number;
           value: string;
           created_at: string;
         };
         Insert: {
-          id?: string;
-          registration_id: string;
-          custom_field_id: string;
+          id?: number;
+          registration_id: number;
+          custom_field_id: number;
           value?: string;
           created_at?: string;
         };
         Update: {
-          id?: string;
-          registration_id?: string;
-          custom_field_id?: string;
+          id?: number;
+          registration_id?: number;
+          custom_field_id?: number;
           value?: string;
           created_at?: string;
         };
       };
       attendance: {
         Row: {
-          id: string;
-          registration_id: string;
+          id: number;
+          registration_id: number;
           checked_in_at: string;
           notes: string;
           points_awarded: number;
         };
         Insert: {
-          id?: string;
-          registration_id: string;
+          id?: number;
+          registration_id: number;
           checked_in_at?: string;
           notes?: string;
           points_awarded?: number;
         };
         Update: {
-          id?: string;
-          registration_id?: string;
+          id?: number;
+          registration_id?: number;
           checked_in_at?: string;
           notes?: string;
           points_awarded?: number;
@@ -189,7 +189,7 @@ export interface Database {
       };
       participants: {
         Row: {
-          id: string;
+          id: number;
           email: string;
           first_name: string;
           last_name: string;
@@ -200,7 +200,7 @@ export interface Database {
           created_at: string;
         };
         Insert: {
-          id?: string;
+          id?: number;
           email: string;
           first_name: string;
           last_name: string;
@@ -211,7 +211,7 @@ export interface Database {
           created_at?: string;
         };
         Update: {
-          id?: string;
+          id?: number;
           email?: string;
           first_name?: string;
           last_name?: string;
@@ -224,22 +224,22 @@ export interface Database {
       };
       participant_badges: {
         Row: {
-          id: string;
-          participant_id: string;
+          id: number;
+          participant_id: number;
           badge_type: string;
           badge_name: string;
           earned_at: string;
         };
         Insert: {
-          id?: string;
-          participant_id: string;
+          id?: number;
+          participant_id: number;
           badge_type: string;
           badge_name: string;
           earned_at?: string;
         };
         Update: {
-          id?: string;
-          participant_id?: string;
+          id?: number;
+          participant_id?: number;
           badge_type?: string;
           badge_name?: string;
           earned_at?: string;
@@ -247,8 +247,8 @@ export interface Database {
       };
       program_slots: {
         Row: {
-          id: string;
-          event_id: string;
+          id: number;
+          event_id: number;
           start_time: string;
           end_time: string;
           title: string;
@@ -260,8 +260,8 @@ export interface Database {
           created_at: string;
         };
         Insert: {
-          id?: string;
-          event_id: string;
+          id?: number;
+          event_id: number;
           start_time: string;
           end_time: string;
           title: string;
@@ -273,8 +273,8 @@ export interface Database {
           created_at?: string;
         };
         Update: {
-          id?: string;
-          event_id?: string;
+          id?: number;
+          event_id?: number;
           start_time?: string;
           end_time?: string;
           title?: string;

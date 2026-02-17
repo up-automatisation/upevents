@@ -30,14 +30,14 @@ router.post('/', async (req: any, res: any) => {
     } = req.body;
 
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO custom_fields (id, event_id, field_name, field_type, field_options, is_required, display_order)
-       VALUES (UUID(), ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO custom_fields (event_id, field_name, field_type, field_options, is_required, display_order)
+       VALUES (?, ?, ?, ?, ?, ?)`,
       [event_id, field_name, field_type, JSON.stringify(field_options || []), is_required || false, display_order || 0]
     );
 
     const [newField] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM custom_fields WHERE event_id = ? ORDER BY id DESC LIMIT 1',
-      [event_id]
+      'SELECT * FROM custom_fields WHERE id = ?',
+      [result.insertId]
     );
 
     res.status(201).json(newField[0]);

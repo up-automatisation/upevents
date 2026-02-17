@@ -33,14 +33,14 @@ router.post('/', async (req: any, res: any) => {
     } = req.body;
 
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO program_slots (id, event_id, start_time, end_time, title, description, objective, is_break, speaker, order_index)
-       VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO program_slots (event_id, start_time, end_time, title, description, objective, is_break, speaker, order_index)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [event_id, start_time, end_time, title, description || '', objective || '', is_break || false, speaker || '', order_index || 0]
     );
 
     const [newSlot] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM program_slots WHERE event_id = ? ORDER BY id DESC LIMIT 1',
-      [event_id]
+      'SELECT * FROM program_slots WHERE id = ?',
+      [result.insertId]
     );
 
     res.status(201).json(newSlot[0]);
@@ -65,8 +65,8 @@ router.put('/batch', async (req: any, res: any) => {
     // Insert new slots
     for (const slot of slots) {
       await connection.query(
-        `INSERT INTO program_slots (id, event_id, start_time, end_time, title, description, objective, is_break, speaker, order_index)
-         VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO program_slots (event_id, start_time, end_time, title, description, objective, is_break, speaker, order_index)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           event_id,
           slot.start_time,

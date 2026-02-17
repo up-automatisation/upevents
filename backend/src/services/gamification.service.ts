@@ -66,15 +66,15 @@ export async function getOrCreateParticipant(email: string, firstName: string, l
 
     // Create new participant with registration points
     const [result] = await connection.query<ResultSetHeader>(
-      `INSERT INTO participants (id, email, first_name, last_name, total_points, level, events_attended, streak)
-       VALUES (UUID(), ?, ?, ?, ?, 1, 0, 0)`,
+      `INSERT INTO participants (email, first_name, last_name, total_points, level, events_attended, streak)
+       VALUES (?, ?, ?, ?, 1, 0, 0)`,
       [email, firstName, lastName, POINTS.REGISTRATION]
     );
 
     // Get the created participant
     const [newRows] = await connection.query<RowDataPacket[]>(
-      'SELECT * FROM participants WHERE email = ?',
-      [email]
+      'SELECT * FROM participants WHERE id = ?',
+      [result.insertId]
     );
 
     const participant = newRows[0];
@@ -88,7 +88,7 @@ export async function getOrCreateParticipant(email: string, firstName: string, l
   }
 }
 
-export async function awardAttendancePoints(participantId: string, registrationId: string) {
+export async function awardAttendancePoints(participantId: number, registrationId: number) {
   const connection = await pool.getConnection();
 
   try {
@@ -152,7 +152,7 @@ export async function awardAttendancePoints(participantId: string, registrationI
   }
 }
 
-async function checkAndAwardBadge(connection: any, participantId: string, badgeType: string, value?: number) {
+async function checkAndAwardBadge(connection: any, participantId: number, badgeType: string, value?: number) {
   // Check if badge already exists
   const [existingRows] = await connection.query(
     'SELECT * FROM participant_badges WHERE participant_id = ? AND badge_type = ?',
@@ -195,8 +195,8 @@ async function checkAndAwardBadge(connection: any, participantId: string, badgeT
 
   if (shouldAward) {
     await connection.query(
-      `INSERT INTO participant_badges (id, participant_id, badge_type, badge_name)
-       VALUES (UUID(), ?, ?, ?)`,
+      `INSERT INTO participant_badges (participant_id, badge_type, badge_name)
+       VALUES (?, ?, ?)`,
       [participantId, badge.type, badge.name]
     );
     return true;
@@ -214,7 +214,7 @@ export async function getParticipantByEmail(email: string) {
   return rows.length > 0 ? rows[0] : null;
 }
 
-export async function getParticipantBadges(participantId: string) {
+export async function getParticipantBadges(participantId: number) {
   const [rows] = await pool.query<RowDataPacket[]>(
     'SELECT * FROM participant_badges WHERE participant_id = ? ORDER BY earned_at DESC',
     [participantId]

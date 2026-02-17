@@ -22,13 +22,13 @@ router.post('/', async (req: any, res: any) => {
     const { name, color } = req.body;
 
     const [result] = await pool.query<ResultSetHeader>(
-      'INSERT INTO categories (id, name, color) VALUES (UUID(), ?, ?)',
+      'INSERT INTO categories (name, color) VALUES (?, ?)',
       [name, color || '#3B82F6']
     );
 
     const [newCategory] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM categories WHERE name = ?',
-      [name]
+      'SELECT * FROM categories WHERE id = ?',
+      [result.insertId]
     );
 
     res.status(201).json(newCategory[0]);

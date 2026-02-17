@@ -37,8 +37,8 @@ router.post('/', async (req: any, res: any) => {
     }
 
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO attendance (id, registration_id, notes, points_awarded)
-       VALUES (UUID(), ?, ?, 0)`,
+      `INSERT INTO attendance (registration_id, notes, points_awarded)
+       VALUES (?, ?, 0)`,
       [registration_id, notes || '']
     );
 

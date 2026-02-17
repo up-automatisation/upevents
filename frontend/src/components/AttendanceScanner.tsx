@@ -56,7 +56,7 @@ export function AttendanceScanner({ attendanceCode }: AttendanceScannerProps) {
     }
   }
 
-  async function loadRegistrations(eventId: string) {
+  async function loadRegistrations(eventId: number) {
     try {
       const regsData = await registrationsApi.getByEvent(eventId);
       const activeRegs = (regsData || []).filter(reg => !reg.cancelled);

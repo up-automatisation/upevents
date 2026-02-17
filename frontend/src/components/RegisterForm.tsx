@@ -25,7 +25,7 @@ export function RegisterForm({ registrationCode }: RegisterFormProps) {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
-  const [customFieldValues, setCustomFieldValues] = useState<Record<string, string>>({});
+  const [customFieldValues, setCustomFieldValues] = useState<Record<number, string>>({});
 
   function formatTime(time: string) {
     return time.substring(0, 5);
@@ -61,7 +61,7 @@ export function RegisterForm({ registrationCode }: RegisterFormProps) {
     }
   }
 
-  function handleCustomFieldChange(fieldId: string, value: string) {
+  function handleCustomFieldChange(fieldId: number, value: string) {
     setCustomFieldValues({
       ...customFieldValues,
       [fieldId]: value

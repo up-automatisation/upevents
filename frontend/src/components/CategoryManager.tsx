@@ -82,7 +82,7 @@ export function CategoryManager() {
     }
   }
 
-  async function deleteCategory(id: string) {
+  async function deleteCategory(id: number) {
     if (!confirm('Voulez-vous vraiment supprimer cette catégorie ? Les événements associés ne seront pas supprimés.')) return;
 
     try {
