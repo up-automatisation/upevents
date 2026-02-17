@@ -1,11 +1,11 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import pool from '../db/connection.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 const router = express.Router();
 
 // GET /api/attendance/by-registration/:regId - Check attendance for a registration
-router.get('/by-registration/:regId', async (req: Request, res: Response) => {
+router.get('/by-registration/:regId', async (req: any, res: any) => {
   try {
     const [attendances] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM attendance WHERE registration_id = ?',
@@ -19,7 +19,7 @@ router.get('/by-registration/:regId', async (req: Request, res: Response) => {
 });
 
 // POST /api/attendance - Create attendance record
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: any, res: any) => {
   try {
     const {
       registration_id,
@@ -54,7 +54,7 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/attendance/by-registration/:regId - Delete attendance record
-router.delete('/by-registration/:regId', async (req: Request, res: Response) => {
+router.delete('/by-registration/:regId', async (req: any, res: any) => {
   try {
     const [result] = await pool.query<ResultSetHeader>(
       'DELETE FROM attendance WHERE registration_id = ?',

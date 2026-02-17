@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import {
   getOrCreateParticipant,
   awardAttendancePoints,
@@ -14,7 +14,7 @@ import {
 const router = express.Router();
 
 // GET /api/gamification/leaderboard - Get leaderboard
-router.get('/leaderboard', async (req: Request, res: Response) => {
+router.get('/leaderboard', async (req: any, res: any) => {
   try {
     const limit = parseInt(req.query.limit as string) || 10;
     const leaderboard = await getLeaderboard(limit);
@@ -25,7 +25,7 @@ router.get('/leaderboard', async (req: Request, res: Response) => {
 });
 
 // GET /api/gamification/participant/:email - Get participant by email
-router.get('/participant/:email', async (req: Request, res: Response) => {
+router.get('/participant/:email', async (req: any, res: any) => {
   try {
     const participant = await getParticipantByEmail(req.params.email);
 
@@ -45,7 +45,7 @@ router.get('/participant/:email', async (req: Request, res: Response) => {
 });
 
 // GET /api/gamification/badges/:participantId - Get participant badges
-router.get('/badges/:participantId', async (req: Request, res: Response) => {
+router.get('/badges/:participantId', async (req: any, res: any) => {
   try {
     const badges = await getParticipantBadges(req.params.participantId);
     res.json(badges);
@@ -55,7 +55,7 @@ router.get('/badges/:participantId', async (req: Request, res: Response) => {
 });
 
 // POST /api/gamification/award-attendance - Award attendance points
-router.post('/award-attendance', async (req: Request, res: Response) => {
+router.post('/award-attendance', async (req: any, res: any) => {
   try {
     const { participant_id, registration_id } = req.body;
 
@@ -72,7 +72,7 @@ router.post('/award-attendance', async (req: Request, res: Response) => {
 });
 
 // GET /api/gamification/config - Get gamification configuration
-router.get('/config', async (req: Request, res: Response) => {
+router.get('/config', async (req: any, res: any) => {
   try {
     res.json({
       points: POINTS,

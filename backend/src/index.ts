@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
+import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -32,13 +32,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req: any, res: any, next: any) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
 // Health check
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (req: any, res: any) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -59,7 +59,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(frontendDist));
 
   // All non-API routes serve the frontend (SPA fallback)
-  app.get('*', (req: Request, res: Response) => {
+  app.get('*', (req: any, res: any) => {
     if (!req.path.startsWith('/api/')) {
       res.sendFile(path.join(frontendDist, 'index.html'));
     }
@@ -67,18 +67,16 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Error handling middleware
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+app.use((err: any, req: any, res: any, next: any) => {
   console.error('Error:', err);
-  const statusCode = err.status || 500;
-  res.status(statusCode).json({
+  res.status(err.status || 500).json({
     error: err.message || 'Internal server error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
-};
-app.use(errorHandler);
+});
 
 // 404 handler for API routes
-app.use((req: Request, res: Response) => {
+app.use((req: any, res: any) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
