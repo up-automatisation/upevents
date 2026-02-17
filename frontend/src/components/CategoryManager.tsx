@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { categories as categoriesApi } from '../lib/api';
 import type { Database } from '../lib/database.types';
+import { AlertModal } from './Modal';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
@@ -28,6 +29,7 @@ export function CategoryManager() {
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState(COLORS[0]);
+  const [alertConfig, setAlertConfig] = useState<{ isOpen: boolean; title: string; message: string; type: 'success' | 'error' | 'info' }>({ isOpen: false, title: '', message: '', type: 'info' });
 
   useEffect(() => {
     loadCategories();
@@ -60,7 +62,7 @@ export function CategoryManager() {
       loadCategories();
     } catch (error) {
       console.error('Error adding category:', error);
-      alert('Erreur lors de l\'ajout de la catégorie');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de l\'ajout de la catégorie', type: 'error' });
     }
   }
 
@@ -80,7 +82,7 @@ export function CategoryManager() {
       loadCategories();
     } catch (error) {
       console.error('Error updating category:', error);
-      alert('Erreur lors de la modification de la catégorie');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de la modification de la catégorie', type: 'error' });
     }
   }
 
@@ -99,7 +101,7 @@ export function CategoryManager() {
       loadCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
-      alert('Erreur lors de la suppression de la catégorie');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de la suppression de la catégorie', type: 'error' });
     }
   }
 
@@ -326,6 +328,14 @@ export function CategoryManager() {
           </div>
         </div>
       )}
+
+      <AlertModal
+        isOpen={alertConfig.isOpen}
+        onClose={() => setAlertConfig({ ...alertConfig, isOpen: false })}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+      />
     </div>
   );
 }
