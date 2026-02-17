@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import session from 'express-session';
 
 // Import routes
 import eventsRouter from './routes/events.js';
@@ -14,6 +15,10 @@ import customFieldsRouter from './routes/custom-fields.js';
 import registrationDataRouter from './routes/registration-data.js';
 import statisticsRouter from './routes/statistics.js';
 import gamificationRouter from './routes/gamification.js';
+import authRouter from './routes/auth.js';
+
+// Import middleware
+import { requireAuth } from './middleware/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +36,20 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'o9&S#ShF7hsHAFq$-upevents-secret-2026',
+  resave: false,
+  saveUninitialized: false,
+  name: 'upevents.sid',
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    sameSite: 'lax'
+  }
+}));
+
 // Request logging middleware
 app.use((req: any, res: any, next: any) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -40,6 +59,39 @@ app.use((req: any, res: any, next: any) => {
 // Health check
 app.get('/health', (req: any, res: any) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Auth routes (public, no protection)
+app.use('/api/auth', authRouter);
+
+// Public routes that don't require authentication
+const publicRoutes = [
+  { method: 'GET', path: /^\/api\/events\/by-registration-code\/.+$/ },
+  { method: 'GET', path: /^\/api\/events\/by-attendance-code\/.+$/ },
+  { method: 'POST', path: /^\/api\/registrations$/ },
+  { method: 'GET', path: /^\/api\/registrations\/by-qr\/.+$/ },
+  { method: 'POST', path: /^\/api\/attendance$/ },
+  { method: 'GET', path: /^\/api\/attendance\/by-registration\/.+$/ },
+  { method: 'GET', path: /^\/api\/custom-fields\/by-event\/.+$/ },
+  { method: 'GET', path: /^\/api\/program-slots\/by-event\/.+$/ },
+  { method: 'POST', path: /^\/api\/registration-data\/batch$/ },
+  { method: 'POST', path: /^\/api\/gamification\/award-attendance$/ },
+  { method: 'GET', path: /^\/api\/gamification\/config$/ },
+  { method: 'GET', path: /^\/health$/ }
+];
+
+// Conditional auth middleware - protect all API routes except public ones
+app.use('/api', (req: any, res: any, next: any) => {
+  // Check if this route is in the public routes list
+  const isPublicRoute = publicRoutes.some(route => {
+    return route.method === req.method && route.path.test(req.path);
+  });
+
+  if (isPublicRoute) {
+    next();
+  } else {
+    requireAuth(req, res, next);
+  }
 });
 
 // API Routes
