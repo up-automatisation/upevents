@@ -23,7 +23,9 @@ export function CategoryManager() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState(COLORS[0]);
 
@@ -82,11 +84,18 @@ export function CategoryManager() {
     }
   }
 
-  async function deleteCategory(id: number) {
-    if (!confirm('Voulez-vous vraiment supprimer cette catégorie ? Les événements associés ne seront pas supprimés.')) return;
+  function confirmDeleteCategory(category: Category) {
+    setCategoryToDelete(category);
+    setShowDeleteModal(true);
+  }
+
+  async function deleteCategory() {
+    if (!categoryToDelete) return;
 
     try {
-      await categoriesApi.delete(id);
+      await categoriesApi.delete(categoryToDelete.id);
+      setShowDeleteModal(false);
+      setCategoryToDelete(null);
       loadCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
@@ -153,7 +162,7 @@ export function CategoryManager() {
                       <Pencil size={18} />
                     </button>
                     <button
-                      onClick={() => deleteCategory(category.id)}
+                      onClick={() => confirmDeleteCategory(category)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Supprimer"
                     >
@@ -271,6 +280,48 @@ export function CategoryManager() {
                   Enregistrer
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && categoryToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <Trash2 className="text-red-600" size={24} />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900">Supprimer la catégorie</h3>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-slate-600 mb-4">
+                Voulez-vous vraiment supprimer la catégorie <strong className="text-slate-900">"{categoryToDelete.name}"</strong> ?
+              </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                <p className="text-sm text-amber-800">
+                  ⚠️ Les événements associés à cette catégorie ne seront pas supprimés.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setCategoryToDelete(null);
+                }}
+                className="flex-1 px-4 py-3 border-2 border-slate-300 rounded-xl hover:bg-slate-50 transition-all font-medium"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={deleteCategory}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all font-semibold shadow-md hover:shadow-lg"
+              >
+                Supprimer
+              </button>
             </div>
           </div>
         </div>
