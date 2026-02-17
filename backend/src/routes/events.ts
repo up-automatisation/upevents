@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import pool from '../db/connection.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { nanoid } from 'nanoid';
@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 const router = express.Router();
 
 // GET /api/events - Get all events
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const { include_closed } = req.query;
 
@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
 // captured by the parameterized route.
 
 // GET /api/events/by-registration-code/:code - Get event by registration code
-router.get('/by-registration-code/:code', async (req, res) => {
+router.get('/by-registration-code/:code', async (req: Request, res: Response) => {
   try {
     const [events] = await pool.query<RowDataPacket[]>(
       `SELECT e.*, c.name as category_name, c.color as category_color
@@ -54,7 +54,7 @@ router.get('/by-registration-code/:code', async (req, res) => {
 });
 
 // GET /api/events/by-attendance-code/:code - Get event by attendance code
-router.get('/by-attendance-code/:code', async (req, res) => {
+router.get('/by-attendance-code/:code', async (req: Request, res: Response) => {
   try {
     const [events] = await pool.query<RowDataPacket[]>(
       `SELECT e.*, c.name as category_name, c.color as category_color
@@ -75,7 +75,7 @@ router.get('/by-attendance-code/:code', async (req, res) => {
 });
 
 // GET /api/events/:id - Get event by ID (must be after specific routes)
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const [events] = await pool.query<RowDataPacket[]>(
       `SELECT e.*, c.name as category_name, c.color as category_color
@@ -96,7 +96,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/events - Create new event
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const {
       title,
@@ -130,7 +130,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/events/:id - Update event
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req: Request, res: Response) => {
   try {
     const {
       title,
@@ -162,7 +162,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/events/:id - Delete event
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   try {
     await pool.query('DELETE FROM events WHERE id = ?', [req.params.id]);
     res.json({ success: true });
@@ -172,7 +172,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // PATCH /api/events/:id/toggle-status - Toggle active status
-router.patch('/:id/toggle-status', async (req, res) => {
+router.patch('/:id/toggle-status', async (req: Request, res: Response) => {
   try {
     await pool.query(
       'UPDATE events SET is_active = NOT is_active WHERE id = ?',
@@ -191,7 +191,7 @@ router.patch('/:id/toggle-status', async (req, res) => {
 });
 
 // PATCH /api/events/:id/close - Close event
-router.patch('/:id/close', async (req, res) => {
+router.patch('/:id/close', async (req: Request, res: Response) => {
   try {
     await pool.query(
       'UPDATE events SET is_closed = TRUE WHERE id = ?',

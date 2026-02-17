@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import pool from '../db/connection.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { nanoid } from 'nanoid';
@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 const router = express.Router();
 
 // GET /api/registrations/by-event/:eventId - Get registrations for an event
-router.get('/by-event/:eventId', async (req, res) => {
+router.get('/by-event/:eventId', async (req: Request, res: Response) => {
   try {
     const [registrations] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM registrations WHERE event_id = ? ORDER BY registered_at DESC',
@@ -19,7 +19,7 @@ router.get('/by-event/:eventId', async (req, res) => {
 });
 
 // GET /api/registrations/by-qr/:qrCode - Get registration by QR code
-router.get('/by-qr/:qrCode', async (req, res) => {
+router.get('/by-qr/:qrCode', async (req: Request, res: Response) => {
   try {
     const [registrations] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM registrations WHERE qr_code = ?',
@@ -37,7 +37,7 @@ router.get('/by-qr/:qrCode', async (req, res) => {
 });
 
 // POST /api/registrations - Create new registration
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const {
       event_id,
@@ -67,7 +67,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/registrations/:id - Update registration
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req: Request, res: Response) => {
   try {
     const {
       first_name,
@@ -95,7 +95,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // PATCH /api/registrations/:id/cancel - Cancel registration
-router.patch('/:id/cancel', async (req, res) => {
+router.patch('/:id/cancel', async (req: Request, res: Response) => {
   try {
     await pool.query(
       'UPDATE registrations SET cancelled = TRUE WHERE id = ?',
