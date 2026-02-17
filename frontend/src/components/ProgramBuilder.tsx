@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Trash2, Clock, User, Coffee, Save, AlertCircle, Edit, X, Calendar, MapPin, CheckCircle, Filter, Tag } from 'lucide-react';
 import { events as eventsApi, categories as categoriesApi, programSlots as programSlotsApi } from '../lib/api';
 import type { Database } from '../lib/database.types';
+import { ConfirmModal, AlertModal } from './Modal';
 
 type Event = Database['public']['Tables']['events']['Row'];
 type ProgramSlot = Database['public']['Tables']['program_slots']['Row'];
@@ -36,6 +37,10 @@ export function ProgramBuilder({ preselectedEventId }: ProgramBuilderProps) {
   const [speaker, setSpeaker] = useState('');
   const [objective, setObjective] = useState('');
   const [isBreak, setIsBreak] = useState(false);
+
+  const [alertConfig, setAlertConfig] = useState<{ isOpen: boolean; title: string; message: string; type: 'success' | 'error' | 'info' }>({ isOpen: false, title: '', message: '', type: 'info' });
+  const [confirmDeleteSlot, setConfirmDeleteSlot] = useState<{ isOpen: boolean; index: number }>({ isOpen: false, index: -1 });
+  const [confirmSaveProgram, setConfirmSaveProgram] = useState(false);
 
   useEffect(() => {
     loadEvents();
@@ -120,7 +125,7 @@ export function ProgramBuilder({ preselectedEventId }: ProgramBuilderProps) {
 
   function addSlot() {
     if (!selectedEventId || !title || !startTime || !endTime) {
-      alert('Veuillez remplir tous les champs obligatoires');
+      setAlertConfig({ isOpen: true, title: 'Champs manquants', message: 'Veuillez remplir tous les champs obligatoires', type: 'error' });
       return;
     }
 
@@ -183,8 +188,11 @@ export function ProgramBuilder({ preselectedEventId }: ProgramBuilderProps) {
   }
 
   function deleteSlot(index: number) {
-    if (!confirm('Voulez-vous vraiment supprimer ce créneau ?')) return;
+    setConfirmDeleteSlot({ isOpen: true, index });
+  }
 
+  function confirmDeleteSlotAction() {
+    const index = confirmDeleteSlot.index;
     const newSlots = slots.filter((_, i) => i !== index);
     const reorderedSlots = newSlots.map((slot, i) => ({
       ...slot,
@@ -193,30 +201,34 @@ export function ProgramBuilder({ preselectedEventId }: ProgramBuilderProps) {
 
     setSlots(reorderedSlots);
     setHasChanges(true);
+    setConfirmDeleteSlot({ isOpen: false, index: -1 });
   }
 
   async function saveProgram() {
     if (!selectedEventId || slots.length === 0) {
-      alert('Ajoutez au moins un créneau avant de valider');
+      setAlertConfig({ isOpen: true, title: 'Aucun créneau', message: 'Ajoutez au moins un créneau avant de valider', type: 'error' });
       return;
     }
 
-    if (!confirm('Voulez-vous valider ce programme ? Cela remplacera le programme existant.')) {
-      return;
-    }
+    setConfirmSaveProgram(true);
+  }
 
+  async function confirmSaveProgramAction() {
+    if (!selectedEventId) return;
+    
     setSaving(true);
+    setConfirmSaveProgram(false);
 
     try {
-      const slotsToSave = slots.map(({ id, ...slot }) => slot);
+      const slotsToSave = slots.map(({ id: _id, ...slot }) => slot);
       await programSlotsApi.batchUpdate(selectedEventId, slotsToSave);
 
-      alert('Programme validé avec succès !');
+      setAlertConfig({ isOpen: true, title: 'Succès', message: 'Programme validé avec succès !', type: 'success' });
       setHasChanges(false);
       await loadSlots();
     } catch (error) {
       console.error('Error saving program:', error);
-      alert('Erreur lors de la validation du programme');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de la validation du programme', type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -772,6 +784,34 @@ export function ProgramBuilder({ preselectedEventId }: ProgramBuilderProps) {
           </div>
         </div>
       </div>
+
+      <AlertModal
+        isOpen={alertConfig.isOpen}
+        onClose={() => setAlertConfig({ ...alertConfig, isOpen: false })}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+      />
+
+      <ConfirmModal
+        isOpen={confirmDeleteSlot.isOpen}
+        onClose={() => setConfirmDeleteSlot({ isOpen: false, index: -1 })}
+        onConfirm={confirmDeleteSlotAction}
+        title="Supprimer le créneau"
+        message="Voulez-vous vraiment supprimer ce créneau ?"
+        confirmText="Supprimer"
+        variant="danger"
+      />
+
+      <ConfirmModal
+        isOpen={confirmSaveProgram}
+        onClose={() => setConfirmSaveProgram(false)}
+        onConfirm={confirmSaveProgramAction}
+        title="Valider le programme"
+        message="Voulez-vous valider ce programme ? Cela remplacera le programme existant."
+        confirmText="Valider"
+        loading={saving}
+      />
     </div>
   );
 }

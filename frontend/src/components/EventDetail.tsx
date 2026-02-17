@@ -5,6 +5,7 @@ import type { Database } from '../lib/database.types';
 import { formatDate, formatDateLong, formatTimeRange, generateQRCodeUrl } from '../lib/utils';
 import { TimeRangePicker } from './TimeRangePicker';
 import { useNavigate } from '../App';
+import { AlertModal, ConfirmModal } from './Modal';
 
 type Event = Database['public']['Tables']['events']['Row'];
 type Registration = Database['public']['Tables']['registrations']['Row'];
@@ -48,6 +49,9 @@ export function EventDetail({ eventId }: EventDetailProps) {
   const [editCategoryId, setEditCategoryId] = useState<number | null>(null);
   const [showProgram, setShowProgram] = useState(false);
   const [showRegistrationPreview, setShowRegistrationPreview] = useState(false);
+  const [alertConfig, setAlertConfig] = useState<{ isOpen: boolean; title: string; message: string; type: 'success' | 'error' | 'info' }>({ isOpen: false, title: '', message: '', type: 'info' });
+  const [confirmCancelRegistration, setConfirmCancelRegistration] = useState<{ isOpen: boolean; regId: number }>({ isOpen: false, regId: -1 });
+  const [confirmCloseEvent, setConfirmCloseEvent] = useState(false);
 
   function formatTime(time: string) {
     return time.substring(0, 5);
@@ -116,14 +120,18 @@ export function EventDetail({ eventId }: EventDetailProps) {
     }
   }
 
-  async function cancelRegistration(regId: number) {
-    if (!confirm('Voulez-vous vraiment annuler cette inscription ?')) return;
+  function cancelRegistration(regId: number) {
+    setConfirmCancelRegistration({ isOpen: true, regId });
+  }
 
+  async function confirmCancelRegistrationAction() {
     try {
-      await registrationsApi.cancel(regId);
+      await registrationsApi.cancel(confirmCancelRegistration.regId);
+      setConfirmCancelRegistration({ isOpen: false, regId: -1 });
       loadEventData();
     } catch (error) {
       console.error('Error cancelling registration:', error);
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de l\'annulation de l\'inscription', type: 'error' });
     }
   }
 
@@ -160,7 +168,7 @@ export function EventDetail({ eventId }: EventDetailProps) {
       loadEventData();
     } catch (error) {
       console.error('Error adding registration:', error);
-      alert('Erreur lors de l\'ajout du participant');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de l\'ajout du participant', type: 'error' });
     }
   }
 
@@ -168,14 +176,14 @@ export function EventDetail({ eventId }: EventDetailProps) {
     if (!event) return;
     const link = `${window.location.origin}${window.location.pathname}#register/${event.registration_code}`;
     navigator.clipboard.writeText(link);
-    alert('Lien copié !');
+    setAlertConfig({ isOpen: true, title: 'Lien copié', message: 'Le lien d\'inscription a été copié dans le presse-papiers', type: 'success' });
   }
 
   function copyAttendanceLink() {
     if (!event) return;
     const link = `${window.location.origin}${window.location.pathname}#attendance/${event.attendance_code}`;
     navigator.clipboard.writeText(link);
-    alert('Lien de présence copié !');
+    setAlertConfig({ isOpen: true, title: 'Lien copié', message: 'Le lien de présence a été copié dans le presse-papiers', type: 'success' });
   }
 
   function openEditModal() {
@@ -210,20 +218,23 @@ export function EventDetail({ eventId }: EventDetailProps) {
       loadEventData();
     } catch (error) {
       console.error('Error updating event:', error);
-      alert('Erreur lors de la modification de l\'événement');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de la modification de l\'événement', type: 'error' });
     }
   }
 
-  async function closeEvent() {
-    if (!event) return;
-    if (!confirm('Voulez-vous vraiment clôturer cet événement ? Il ne sera plus visible dans la liste principale.')) return;
+  function closeEvent() {
+    setConfirmCloseEvent(true);
+  }
 
+  async function confirmCloseEventAction() {
+    if (!event) return;
+    setConfirmCloseEvent(false);
     try {
       const updatedEvent = await eventsApi.close(event.id);
       setEvent(updatedEvent);
     } catch (error) {
       console.error('Error closing event:', error);
-      alert('Erreur lors de la clôture de l\'événement');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de la clôture de l\'événement', type: 'error' });
     }
   }
 
@@ -235,7 +246,7 @@ export function EventDetail({ eventId }: EventDetailProps) {
       setEvent(updatedEvent);
     } catch (error) {
       console.error('Error reopening event:', error);
-      alert('Erreur lors de la réouverture de l\'événement');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de la réouverture de l\'événement', type: 'error' });
     }
   }
 
@@ -979,6 +990,34 @@ export function EventDetail({ eventId }: EventDetailProps) {
           </div>
         </div>
       )}
+
+      <AlertModal
+        isOpen={alertConfig.isOpen}
+        onClose={() => setAlertConfig({ ...alertConfig, isOpen: false })}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+      />
+
+      <ConfirmModal
+        isOpen={confirmCancelRegistration.isOpen}
+        onClose={() => setConfirmCancelRegistration({ isOpen: false, regId: -1 })}
+        onConfirm={confirmCancelRegistrationAction}
+        title="Annuler l'inscription"
+        message="Voulez-vous vraiment annuler cette inscription ?"
+        confirmText="Annuler l'inscription"
+        variant="danger"
+      />
+
+      <ConfirmModal
+        isOpen={confirmCloseEvent}
+        onClose={() => setConfirmCloseEvent(false)}
+        onConfirm={confirmCloseEventAction}
+        title="Clôturer l'événement"
+        message="Voulez-vous vraiment clôturer cet événement ? Il ne sera plus visible dans la liste principale."
+        confirmText="Clôturer"
+        variant="warning"
+      />
     </div>
   );
 }

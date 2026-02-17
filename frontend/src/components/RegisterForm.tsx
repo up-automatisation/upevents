@@ -3,6 +3,7 @@ import { CheckCircle, Calendar, MapPin, Coffee, List, ChevronDown, ChevronUp } f
 import { events as eventsApi, customFields as customFieldsApi, programSlots as programSlotsApi, registrations as registrationsApi, registrationData as registrationDataApi } from '../lib/api';
 import type { Database } from '../lib/database.types';
 import { formatDateLong, formatTimeRange } from '../lib/utils';
+import { AlertModal } from './Modal';
 
 type Event = Database['public']['Tables']['events']['Row'];
 type CustomField = Database['public']['Tables']['custom_fields']['Row'];
@@ -26,6 +27,7 @@ export function RegisterForm({ registrationCode }: RegisterFormProps) {
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
   const [customFieldValues, setCustomFieldValues] = useState<Record<number, string>>({});
+  const [alertConfig, setAlertConfig] = useState<{ isOpen: boolean; title: string; message: string; type: 'success' | 'error' | 'info' }>({ isOpen: false, title: '', message: '', type: 'info' });
 
   function formatTime(time: string) {
     return time.substring(0, 5);
@@ -74,7 +76,7 @@ export function RegisterForm({ registrationCode }: RegisterFormProps) {
 
     for (const field of customFields) {
       if (field.is_required && !customFieldValues[field.id]?.trim()) {
-        alert(`Le champ "${field.field_name}" est obligatoire`);
+        setAlertConfig({ isOpen: true, title: 'Champ obligatoire', message: `Le champ "${field.field_name}" est obligatoire`, type: 'error' });
         return;
       }
     }
@@ -102,7 +104,7 @@ export function RegisterForm({ registrationCode }: RegisterFormProps) {
       setSuccess(true);
     } catch (error) {
       console.error('Error submitting registration:', error);
-      alert('Erreur lors de l\'inscription. Veuillez réessayer.');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de l\'inscription. Veuillez réessayer.', type: 'error' });
     } finally {
       setSubmitting(false);
     }
@@ -385,6 +387,14 @@ export function RegisterForm({ registrationCode }: RegisterFormProps) {
           )}
         </div>
       </div>
+
+      <AlertModal
+        isOpen={alertConfig.isOpen}
+        onClose={() => setAlertConfig({ ...alertConfig, isOpen: false })}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+      />
     </div>
   );
 }

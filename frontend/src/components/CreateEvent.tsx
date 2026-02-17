@@ -4,6 +4,7 @@ import { events as eventsApi, categories as categoriesApi, customFields as custo
 import type { Database } from '../lib/database.types';
 import { TimeRangePicker } from './TimeRangePicker';
 import { useNavigate } from '../App';
+import { AlertModal } from './Modal';
 
 type CustomField = Database['public']['Tables']['custom_fields']['Insert'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -25,6 +26,7 @@ export function CreateEvent() {
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldType, setNewFieldType] = useState<'text' | 'email' | 'number' | 'select' | 'textarea'>('text');
   const [newFieldRequired, setNewFieldRequired] = useState(false);
+  const [alertConfig, setAlertConfig] = useState<{ isOpen: boolean; title: string; message: string; type: 'success' | 'error' | 'info' }>({ isOpen: false, title: '', message: '', type: 'info' });
 
   useEffect(() => {
     loadCategories();
@@ -73,7 +75,7 @@ export function CreateEvent() {
         title,
         description,
         location,
-        event_date: new Date(eventDate).toISOString(),
+        event_date: eventDate,
         category_id: categoryId || null
       });
 
@@ -92,7 +94,7 @@ export function CreateEvent() {
       navigate(`event/${event.id}`);
     } catch (error) {
       console.error('Error creating event:', error);
-      alert('Erreur lors de la création de l\'événement');
+      setAlertConfig({ isOpen: true, title: 'Erreur', message: 'Erreur lors de la création de l\'événement', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -301,6 +303,14 @@ export function CreateEvent() {
           </form>
         </div>
       </div>
+
+      <AlertModal
+        isOpen={alertConfig.isOpen}
+        onClose={() => setAlertConfig({ ...alertConfig, isOpen: false })}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+      />
     </div>
   );
 }
