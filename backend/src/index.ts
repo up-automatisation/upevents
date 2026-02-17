@@ -69,7 +69,8 @@ if (process.env.NODE_ENV === 'production') {
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
-  res.status(err.status || 500).json({
+  const statusCode = (err as any).status || 500;
+  res.status(statusCode).json({
     error: err.message || 'Internal server error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
