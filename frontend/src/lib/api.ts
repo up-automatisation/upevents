@@ -1,6 +1,9 @@
 // API Client for UpEvents Backend
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// En production, utiliser l'URL relative car le backend sert le frontend
+// En développement, utiliser l'URL complète du backend local
+const API_URL = import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api');
 
 class ApiError extends Error {
   constructor(public status: number, message: string) {
