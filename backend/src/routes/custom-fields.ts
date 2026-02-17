@@ -1,11 +1,11 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import pool from '../db/connection.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 const router = express.Router();
 
 // GET /api/custom-fields/by-event/:eventId - Get custom fields for an event
-router.get('/by-event/:eventId', async (req, res) => {
+router.get('/by-event/:eventId', async (req: Request, res: Response) => {
   try {
     const [fields] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM custom_fields WHERE event_id = ? ORDER BY display_order',
@@ -18,7 +18,7 @@ router.get('/by-event/:eventId', async (req, res) => {
 });
 
 // POST /api/custom-fields - Create new custom field
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const {
       event_id,
@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
 });
 
 // DELETE /api/custom-fields/:id - Delete custom field
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   try {
     await pool.query('DELETE FROM custom_fields WHERE id = ?', [req.params.id]);
     res.json({ success: true });

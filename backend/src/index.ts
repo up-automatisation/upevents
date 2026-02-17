@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -32,13 +32,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -59,7 +59,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(frontendDist));
 
   // All non-API routes serve the frontend (SPA fallback)
-  app.get('*', (req, res) => {
+  app.get('*', (req: Request, res: Response) => {
     if (!req.path.startsWith('/api/')) {
       res.sendFile(path.join(frontendDist, 'index.html'));
     }
@@ -67,24 +67,25 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.error('Error:', err);
-  const statusCode = (err as any).status || 500;
+  const statusCode = err.status || 500;
   res.status(statusCode).json({
     error: err.message || 'Internal server error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
-});
+};
+app.use(errorHandler);
 
 // 404 handler for API routes
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
 // Start server
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
-    console.log(`🚀 UpEvents API server running on http://localhost:${PORT}`);
+    console.log(`UpEvents API server running on http://localhost:${PORT}`);
   });
 }
 

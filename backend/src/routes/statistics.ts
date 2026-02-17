@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import {
   getEventStatistics,
   getParticipantStatistics,
@@ -8,7 +8,7 @@ import {
 const router = express.Router();
 
 // GET /api/statistics/events - Get event statistics
-router.get('/events', async (req, res) => {
+router.get('/events', async (req: Request, res: Response) => {
   try {
     const stats = await getEventStatistics();
     res.json(stats);
@@ -18,7 +18,7 @@ router.get('/events', async (req, res) => {
 });
 
 // GET /api/statistics/participants - Get participant statistics
-router.get('/participants', async (req, res) => {
+router.get('/participants', async (req: Request, res: Response) => {
   try {
     const stats = await getParticipantStatistics();
     res.json(stats);
@@ -28,7 +28,7 @@ router.get('/participants', async (req, res) => {
 });
 
 // GET /api/statistics/participants/:email - Get participant details
-router.get('/participants/:email', async (req, res) => {
+router.get('/participants/:email', async (req: Request, res: Response) => {
   try {
     const details = await getParticipantDetails(req.params.email);
 
