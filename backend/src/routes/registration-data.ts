@@ -1,11 +1,11 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import pool from '../db/connection.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 const router = express.Router();
 
 // POST /api/registration-data/batch - Batch create registration data
-router.post('/batch', async (req: Request, res: Response) => {
+router.post('/batch', async (req: any, res: any) => {
   const connection = await pool.getConnection();
 
   try {

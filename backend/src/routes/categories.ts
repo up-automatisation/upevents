@@ -1,11 +1,11 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import pool from '../db/connection.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 const router = express.Router();
 
 // GET /api/categories - Get all categories
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req: any, res: any) => {
   try {
     const [categories] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM categories ORDER BY name'
@@ -17,7 +17,7 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // POST /api/categories - Create new category
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: any, res: any) => {
   try {
     const { name, color } = req.body;
 
@@ -41,7 +41,7 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /api/categories/:id - Update category
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', async (req: any, res: any) => {
   try {
     const { name, color } = req.body;
 
@@ -65,7 +65,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/categories/:id - Delete category
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req: any, res: any) => {
   try {
     await pool.query('DELETE FROM categories WHERE id = ?', [req.params.id]);
     res.json({ success: true });

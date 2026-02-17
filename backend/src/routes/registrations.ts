@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import pool from '../db/connection.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { nanoid } from 'nanoid';
@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 const router = express.Router();
 
 // GET /api/registrations/by-event/:eventId - Get registrations for an event
-router.get('/by-event/:eventId', async (req: Request, res: Response) => {
+router.get('/by-event/:eventId', async (req: any, res: any) => {
   try {
     const [registrations] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM registrations WHERE event_id = ? ORDER BY registered_at DESC',
@@ -19,7 +19,7 @@ router.get('/by-event/:eventId', async (req: Request, res: Response) => {
 });
 
 // GET /api/registrations/by-qr/:qrCode - Get registration by QR code
-router.get('/by-qr/:qrCode', async (req: Request, res: Response) => {
+router.get('/by-qr/:qrCode', async (req: any, res: any) => {
   try {
     const [registrations] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM registrations WHERE qr_code = ?',
@@ -37,7 +37,7 @@ router.get('/by-qr/:qrCode', async (req: Request, res: Response) => {
 });
 
 // POST /api/registrations - Create new registration
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: any, res: any) => {
   try {
     const {
       event_id,
@@ -67,7 +67,7 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /api/registrations/:id - Update registration
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', async (req: any, res: any) => {
   try {
     const {
       first_name,
@@ -95,7 +95,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 });
 
 // PATCH /api/registrations/:id/cancel - Cancel registration
-router.patch('/:id/cancel', async (req: Request, res: Response) => {
+router.patch('/:id/cancel', async (req: any, res: any) => {
   try {
     await pool.query(
       'UPDATE registrations SET cancelled = TRUE WHERE id = ?',

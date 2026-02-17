@@ -1,11 +1,11 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import pool from '../db/connection.js';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 const router = express.Router();
 
 // GET /api/program-slots/by-event/:eventId - Get program slots for an event
-router.get('/by-event/:eventId', async (req: Request, res: Response) => {
+router.get('/by-event/:eventId', async (req: any, res: any) => {
   try {
     const [slots] = await pool.query<RowDataPacket[]>(
       'SELECT * FROM program_slots WHERE event_id = ? ORDER BY order_index, start_time',
@@ -18,7 +18,7 @@ router.get('/by-event/:eventId', async (req: Request, res: Response) => {
 });
 
 // POST /api/program-slots - Create new program slot
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: any, res: any) => {
   try {
     const {
       event_id,
@@ -51,7 +51,7 @@ router.post('/', async (req: Request, res: Response) => {
 
 // PUT /api/program-slots/batch - Batch update/create program slots
 // IMPORTANT: Must be before /:id to avoid "batch" being captured as an ID
-router.put('/batch', async (req: Request, res: Response) => {
+router.put('/batch', async (req: any, res: any) => {
   const connection = await pool.getConnection();
 
   try {
@@ -98,7 +98,7 @@ router.put('/batch', async (req: Request, res: Response) => {
 });
 
 // PUT /api/program-slots/:id - Update program slot (must be after /batch)
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', async (req: any, res: any) => {
   try {
     const {
       start_time,
@@ -130,7 +130,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/program-slots/:id - Delete program slot
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req: any, res: any) => {
   try {
     await pool.query('DELETE FROM program_slots WHERE id = ?', [req.params.id]);
     res.json({ success: true });
